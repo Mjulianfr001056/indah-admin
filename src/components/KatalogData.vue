@@ -123,11 +123,13 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
 
-      axios.get('http://localhost:8080/test/katalog', { headers })
-        .then(response => {
-          this.katalogData = response.data.entity
+      axios
+        .get('http://localhost:8080/api/v1/admin/katalog', { headers })
+        .then((response) => {
+          this.katalogData = response.data.entity.map(jsonString => JSON.parse(jsonString))
+          console.log(response.data.entity.map(jsonString => JSON.parse(jsonString)))
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error fetching data:', error)
         })
     }

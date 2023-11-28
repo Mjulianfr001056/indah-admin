@@ -92,9 +92,9 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
 
-      axios.get('http://localhost:8080/test/user', { headers })
+      axios.get('https://91ed-103-123-250-164.ngrok-free.app/api/v1/admin/users', { headers })
         .then(response => {
-          this.userData = response.data.entity
+          this.userData = response.data.entity.map(jsonString => JSON.parse(jsonString))
         })
         .catch(error => {
           console.error('Error fetching data:', error)
