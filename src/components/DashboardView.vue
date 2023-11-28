@@ -111,7 +111,7 @@ export default {
       selectedStatus: '',
       showPopup: false,
       selectedOrderIndex: -1,
-      axiosResponse: null
+      axiosResponse: []
     }
   },
   computed: {
@@ -196,20 +196,15 @@ export default {
       const headers = {
         'ngrok-skip-browser-warning': 'true'
       }
-
-      if (this.axiosResponse) {
-        this.orders = this.axiosResponse.raw.map(jsonString => JSON.parse(jsonString))
-      } else {
-        axios
-          .get('http://localhost:8080/api/v1/admin/dashboard', { headers })
-          .then((response) => {
-            this.axiosResponse = response.data.entity
-            this.orders = this.axiosResponse.raw.map(jsonString => JSON.parse(jsonString))
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      }
+      axios
+        .get('http://localhost:8080/api/v1/admin/dashboard', { headers })
+        .then((response) => {
+          this.axiosResponse = response.data.entity
+          this.orders = this.axiosResponse.raw.map(jsonString => JSON.parse(jsonString))
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
   },
   created () {
