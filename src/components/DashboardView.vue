@@ -13,21 +13,21 @@
       <li>
         <i class="bx bxs-calendar-check"></i>
         <span class="text">
-          <h3>1020</h3>
+          <h3>{{ axiosResponse.PENDING }}</h3>
           <p>Pending</p>
         </span>
       </li>
       <li>
         <i class="bx bxs-group"></i>
         <span class="text">
-          <h3>2834</h3>
+          <h3>{{ axiosResponse.DISETUJUI }}</h3>
           <p>Disetujui</p>
         </span>
       </li>
       <li>
         <i class="bx bxs-dollar-circle"></i>
         <span class="text">
-          <h3>2543</h3>
+          <h3>{{ axiosResponse.DITOLAK }}</h3>
           <p>Ditolak</p>
         </span>
       </li>
@@ -54,15 +54,15 @@
           <tbody>
             <tr v-for="izin in paginatedOrders" :key="izin.id">
               <td>
-                <p>{{ izin.user.nama }}</p>
+                <p>{{ izin.nama }}</p>
               </td>
-              <td>{{ izin.date }}</td>
-              <td>{{ izin.namaData }}</td>
+              <td>{{ izin.tanggal }}</td>
+              <td>{{ izin.judul }}</td>
               <td>
                 <span
-                  :class="['status', izin.statusPerizinan]"
+                  :class="['status', izin.status]"
                   @click="openPopup(index)"
-                >{{ izin.statusPerizinan }}</span>
+                >{{ izin.status }}</span>
               </td>
             </tr>
           </tbody>
@@ -99,6 +99,7 @@
 
 <script>
 import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -109,7 +110,8 @@ export default {
       sortDirection: 'asc',
       selectedStatus: '',
       showPopup: false,
-      selectedOrderIndex: -1
+      selectedOrderIndex: -1,
+      axiosResponse: null
     }
   },
   computed: {
@@ -195,15 +197,19 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
 
-      axios
-        .get('http://localhost:8080/test/izin', { headers })
-        .then((response) => {
-          console.log(response.data.entity)
-          this.orders = response.data.entity
-        })
-        .catch((error) => {
-          console.log(error)
-        })
+      if (this.axiosResponse) {
+        this.orders = this.axiosResponse.raw.map(jsonString => JSON.parse(jsonString))
+      } else {
+        axios
+          .get('http://localhost:8080/api/v1/admin/dashboard', { headers })
+          .then((response) => {
+            this.axiosResponse = response.data.entity
+            this.orders = this.axiosResponse.raw.map(jsonString => JSON.parse(jsonString))
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
     }
   },
   created () {
