@@ -13,21 +13,21 @@
       <li>
         <i class="bx bxs-calendar-check"></i>
         <span class="text">
-          <h3>{{ axiosResponse.PENDING }}</h3>
+          <h3>{{ axiosResponse.PENDING !== undefined ? axiosResponse.PENDING : 0  }}</h3>
           <p>Pending</p>
         </span>
       </li>
       <li>
         <i class="bx bxs-group"></i>
         <span class="text">
-          <h3>{{ axiosResponse.DISETUJUI }}</h3>
+          <h3>{{ axiosResponse.DISETUJUI !== undefined ? axiosResponse.DISETUJUI : 0}}</h3>
           <p>Disetujui</p>
         </span>
       </li>
       <li>
         <i class="bx bxs-dollar-circle"></i>
         <span class="text">
-          <h3>{{ axiosResponse.DITOLAK }}</h3>
+          <h3>{{ axiosResponse.DITOLAK  !== undefined ? axiosResponse.DITOLAK : 0}}</h3>
           <p>Ditolak</p>
         </span>
       </li>
@@ -45,6 +45,7 @@
         <table>
           <thead>
             <tr>
+              <th class="order">id</th>
               <th class="order" style="padding-left: 6px">User</th>
               <th class="order">Tanggal Request</th>
               <th class="order">Permintaan</th>
@@ -53,6 +54,7 @@
           </thead>
           <tbody>
             <tr v-for="izin in paginatedOrders" :key="izin.id">
+              <td>{{ izin.id }}</td>
               <td>
                 <p>{{ izin.nama }}</p>
               </td>
@@ -61,8 +63,9 @@
               <td>
                 <span
                   :class="['status', izin.status]"
-                  @click="openPopup(index)"
-                >{{ izin.status }}</span>
+                  @click="openPopup(izin)"
+                  >{{ izin.status }}</span
+                >
               </td>
             </tr>
           </tbody>
@@ -110,8 +113,9 @@ export default {
       sortDirection: 'asc',
       selectedStatus: '',
       showPopup: false,
+      axiosResponse: [],
       selectedOrderIndex: -1,
-      axiosResponse: []
+      currentRequestId: null
     }
   },
   computed: {
@@ -132,8 +136,25 @@ export default {
         : this.orders
     }
   },
-
   methods: {
+    async patchStatus (newStatus, currentRequestId) {
+      const patchData = {
+        'ngrok-skip-browser-warning': 'true',
+        requestId: currentRequestId,
+        newStatus: newStatus
+      }
+
+      const apiUrl =
+        'https://3067-110-138-125-213.ngrok-free.app/api/v1/admin/izin'
+
+      try {
+        await axios.patch(apiUrl, patchData)
+        console.log('Status berhasil diperbarui:', newStatus)
+        this.fetchData()
+      } catch (error) {
+        console.error('Gagal mengirim permintaan:', error)
+      }
+    },
     nextPage () {
       if (this.currentPage < this.totalPages) {
         this.currentPage++
@@ -144,7 +165,6 @@ export default {
         this.currentPage--
       }
     },
-
     sortOrders (orders) {
       return orders.sort((a, b) => {
         const aValue = a[this.sortBy]
@@ -156,51 +176,39 @@ export default {
         return 0
       })
     },
-
     filterData () {
       this.currentPage = 1
     },
-    openPopup (index) {
-      this.selectedOrderIndex = index
+    openPopup (izin) {
+      console.log(izin.id)
+      this.currentRequestId = izin.id
       this.showPopup = true
     },
-
+    approveRequest () {
+      this.patchStatus('DISETUJUI', this.currentRequestId)
+      this.closePopup()
+    },
+    rejectRequest () {
+      this.patchStatus('DITOLAK', this.currentRequestId)
+      this.closePopup()
+    },
     closePopup () {
       this.showPopup = false
     },
-    approveRequest () {
-      if (this.selectedOrderIndex !== -1) {
-        // Mengubah status menjadi 'Disetujui'
-        this.$set(this.orders, this.selectedOrderIndex, {
-          ...this.orders[this.selectedOrderIndex],
-          status: 'Disetujui',
-          statusClass: 'Disetujui'
-        })
-        this.closePopup()
-      }
-    },
-
-    rejectRequest () {
-      if (this.selectedOrderIndex !== -1) {
-        // Mengubah status menjadi 'Ditolak'
-        this.$set(this.orders, this.selectedOrderIndex, {
-          ...this.orders[this.selectedOrderIndex],
-          status: 'Ditolak',
-          statusClass: 'Ditolak'
-        })
-        this.closePopup()
-      }
-    },
-
     fetchData () {
       const headers = {
         'ngrok-skip-browser-warning': 'true'
       }
       axios
-        .get('http://localhost:8080/api/v1/admin/dashboard', { headers })
+        .get(
+          'https://3067-110-138-125-213.ngrok-free.app/api/v1/admin/dashboard',
+          { headers }
+        )
         .then((response) => {
           this.axiosResponse = response.data.entity
-          this.orders = this.axiosResponse.raw.map(jsonString => JSON.parse(jsonString))
+          this.orders = this.axiosResponse.raw.map((jsonString) =>
+            JSON.parse(jsonString)
+          )
         })
         .catch((error) => {
           console.log(error)
