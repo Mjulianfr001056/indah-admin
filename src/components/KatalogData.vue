@@ -124,7 +124,7 @@ export default {
       }
 
       axios
-        .get('http://localhost:8080/api/v1/admin/katalog', { headers })
+        .get('https://5d54-110-138-125-213.ngrok-free.app/api/v1/admin/katalog', { headers })
         .then((response) => {
           this.katalogData = response.data.entity.map(jsonString => JSON.parse(jsonString))
           console.log(response.data.entity.map(jsonString => JSON.parse(jsonString)))

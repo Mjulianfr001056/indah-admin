@@ -92,7 +92,7 @@ export default {
         'ngrok-skip-browser-warning': 'true'
       }
 
-      axios.get('https://91ed-103-123-250-164.ngrok-free.app/api/v1/admin/users', { headers })
+      axios.get('https://5d54-110-138-125-213.ngrok-free.app/api/v1/admin/users', { headers })
         .then(response => {
           this.userData = response.data.entity.map(jsonString => JSON.parse(jsonString))
         })

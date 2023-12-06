@@ -145,7 +145,7 @@ export default {
       }
 
       const apiUrl =
-        'https://3067-110-138-125-213.ngrok-free.app/api/v1/admin/izin'
+        'https://5d54-110-138-125-213.ngrok-free.app/api/v1/admin/izin'
 
       try {
         await axios.patch(apiUrl, patchData)
@@ -201,7 +201,7 @@ export default {
       }
       axios
         .get(
-          'https://3067-110-138-125-213.ngrok-free.app/api/v1/admin/dashboard',
+          'https://5d54-110-138-125-213.ngrok-free.app/api/v1/admin/dashboard',
           { headers }
         )
         .then((response) => {
