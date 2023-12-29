@@ -145,7 +145,7 @@ export default {
       }
 
       const apiUrl =
-        'https://5d54-110-138-125-213.ngrok-free.app/api/v1/admin/izin'
+        'https://5ac0-101-255-119-38.ngrok-free.app/api/v1/admin/izin'
 
       try {
         await axios.patch(apiUrl, patchData)
